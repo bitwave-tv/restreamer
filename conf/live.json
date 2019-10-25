@@ -3,7 +3,7 @@
     "jsondb": "db/v1",
     "auth": {
         "username": "admin",
-        "password": "datarhei",
+        "password": "password",
         "token": ""
     },
     "ffmpeg": {
@@ -138,7 +138,7 @@
             "video": {
                  "outputOptions": [
                     "-map_metadata -1",
-                    "-metadata application=datarhei/Restreamer"
+                    "-metadata application=bitwavetv/restreamer"
                 ]
             },
             "rtmp": {
@@ -246,7 +246,7 @@
                 "TIMEZONE"
             ],
             "type": "string",
-            "defaultValue": "Europe/Berlin",
+            "defaultValue": "America/Los_Angeles",
             "required": false,
             "description": "Set the timezone. Accepts Olson timezone IDs."
         },
@@ -277,7 +277,7 @@
                 "RESTREAMER_PASSWORD"
             ],
             "type": "string",
-            "defaultValue": "datarhei",
+            "defaultValue": "password",
             "required": false,
             "description": "Password for the backend."
         },

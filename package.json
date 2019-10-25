@@ -1,11 +1,11 @@
 {
-  "name": "Restreamer",
+  "name": "restreamer",
   "version": "0.5.0",
   "description": "Allows you to do h.264 video streaming on your website without a streaming provider",
-  "author": "datarhei.org",
+  "author": "bitwave-tv",
   "repository": {
     "type": "git",
-    "url": "git://github.com/datarhei/restreamer.git"
+    "url": "git://github.com/bitwave-tv/restreamer.git"
   },
   "license": "Apache-2.0",
   "scripts": {

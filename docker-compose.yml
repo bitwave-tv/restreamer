@@ -1,7 +1,7 @@
 version: '3'
 services:
     restreamer:
-        image: datarhei/restreamer
+        image: bitwavetv/restreamer
         ports:
             - "8080:8080"
         networks:
@@ -10,9 +10,9 @@ services:
             - "~/db:/restreamer/db"
         environment:
           - RS_USERNAME=admin
-          - RS_PASSWORD=datarhei
+          - RS_PASSWORD=password
           - RS_LOGLEVEL=4
-          - RS_TIMEZONE=Europe/Berlin
+          - RS_TIMEZONE=America/Los_Angeles
           - RS_SNAPSHOT_INTERVAL=1m
         deploy:
           replicas: 1
