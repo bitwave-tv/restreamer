@@ -1,11 +1,11 @@
 'use strict';
 
 // path to store the transpiled es6 files
-const transpiledPath = "src/webserver/transpiled/";
+const transpiledPath = 'src/webserver/transpiled/';
 
 const files = {
-    //workaround to keep correct order
-    transpiledFrontendJs: [
+    // workaround to keep correct order
+    'transpiledFrontendJs': [
         `${transpiledPath}/webserver/public/scripts/App.js`,
         `${transpiledPath}/webserver/public/scripts/App.Config.js`,
 
@@ -30,50 +30,49 @@ const files = {
         `${transpiledPath}/webserver/public/scripts/Shared/LoggerService.js`,
         `${transpiledPath}/webserver/public/scripts/Shared/WebsocketsService.js`
     ],
-    es6Src: [
+    'es6Src': [
         'webserver/public/scripts/**/*.js'
     ],
-    stylesheets: ['src/webserver/public/css/*.css']
+    'stylesheets': ['src/webserver/public/css/*.css']
 };
 
 module.exports = function (grunt) {
-
     // Project Configuration
     grunt.initConfig({
 
         /*
          Config for shell commands
          */
-        shell: {
-            start: {
-                command: 'npm start'
+        'shell': {
+            'start': {
+                'command': 'npm start'
             },
-            removeTempTranspilingFolder: {
-                command: `rm -Rf ${transpiledPath}`
+            'removeTempTranspilingFolder': {
+                'command': `rm -Rf ${transpiledPath}`
             },
-            createTempTranspilingFolder: {
-                command: `mkdir ${transpiledPath}`
+            'createTempTranspilingFolder': {
+                'command': `mkdir ${transpiledPath}`
             },
-            eslint: {
-                command: 'eslint src/*'
+            'eslint': {
+                'command': 'eslint src/*'
             }
         },
 
         /*
          Config for Babel compiling
          */
-        babel: {
-            options: {
-                sourceMap: true,
-                presets: ['env']
+        'babel': {
+            'options': {
+                'sourceMap': true,
+                'presets': ['env']
             },
-            all: {
-                files: [
+            'all': {
+                'files': [
                     {
-                        expand: true,
-                        cwd: 'src/',
-                        src: '<%= es6Src %>',
-                        dest: transpiledPath
+                        'expand': true,
+                        'cwd': 'src/',
+                        'src': '<%= es6Src %>',
+                        'dest': transpiledPath
                     }
                 ]
             }
@@ -82,34 +81,34 @@ module.exports = function (grunt) {
         /*
          Config for eslinter
          */
-        eslint: {
-            all: ['src/**/*.js'],
-            options: {
-                configFile: '.eslintrc.json'
+        'eslint': {
+            'all': ['src/**/*.js'],
+            'options': {
+                'configFile': '.eslintrc.json'
             }
         },
 
         /*
          config for css linter
          */
-        csslint: {
-            options: {
-                csslintrc: '.csslintrc'
+        'csslint': {
+            'options': {
+                'csslintrc': '.csslintrc'
             },
-            all: {
-                src: ['src/webserver/public/css/*.css']
+            'all': {
+                'src': ['src/webserver/public/css/*.css']
             }
         },
 
         /*
          uglify and minify frontend javascript
          */
-        uglify: {
-            production: {
-                options: {
-                    mangle: true
+        'uglify': {
+            'production': {
+                'options': {
+                    'mangle': true
                 },
-                files: {
+                'files': {
                     'src/webserver/public/dist/application.min.js': 'src/webserver/public/dist/application.js'
                 }
             }
@@ -118,9 +117,9 @@ module.exports = function (grunt) {
         /*
          minify css files
          */
-        cssmin: {
-            combine: {
-                files: {
+        'cssmin': {
+            'combine': {
+                'files': {
                     'src/webserver/public/css/restreamer.min.css': '<%= stylesheets %>'
                 }
             }
@@ -129,9 +128,9 @@ module.exports = function (grunt) {
         /*
          produces one file from all fontend javascript bewaring DI naming of angular
          */
-        ngAnnotate: {
-            production: {
-                files: {
+        'ngAnnotate': {
+            'production': {
+                'files': {
                     'src/webserver/public/dist/application.js': '<%= transpiledFrontendJs %>'
                 }
             }
@@ -174,5 +173,4 @@ module.exports = function (grunt) {
      Run Tasks
      */
     grunt.registerTask('run', ['shell:start']);
-
 };
