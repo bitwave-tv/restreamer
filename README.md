@@ -23,8 +23,9 @@ More additional informations about streaming, cameras and so on you can find in 
 #### Building your own Docker-Image:
 
 ```sh
-$ git clone https://github.com/datarhei/restreamer
-$ docker build -t restreamer .
+$ git clone https://github.com/bitwave-tv/restreamer
+$ docker build -t bitwavetv/restreamer .
+$ docker run -it --rm -p 8080:8080 bitwavetv/restreamer
 ```
 
 *Required Docker version >= 17.05*
