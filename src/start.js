@@ -25,7 +25,7 @@ const Restreamer = require('./classes/Restreamer');
 const RestreamerData = require('./classes/RestreamerData');
 const restreamerApp = require('./webserver/app');
 
-if(process.env.RS_DEBUG == "true") {
+if (process.env.RS_DEBUG == "true") {
     logger.info('Debugging enabled. Check the /debug path in the web interface.', false);
 }
 
@@ -46,7 +46,7 @@ logger.info('', false);
 env.list(logger);
 
 // bail out if there are errors
-if(env.hasErrors()) {
+if (env.hasErrors()) {
     process.exit();
 }
 
