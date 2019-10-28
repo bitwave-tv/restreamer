@@ -76,31 +76,31 @@ class Restreamer {
             }, interval);
         };
 
-        let command = new FfmpegCommand(Restreamer.getRTMPStreamUrl());
+        const ffmpegCommand = new FfmpegCommand(Restreamer.getRTMPStreamUrl());
 
-        command.output(Restreamer.getSnapshotPath());
+        ffmpegCommand.output(Restreamer.getSnapshotPath());
 
-        Restreamer.addStreamOptions(command, 'global', null);
-        Restreamer.addStreamOptions(command, 'snapshot', null);
+        Restreamer.addStreamOptions(ffmpegCommand, 'global', null);
+        Restreamer.addStreamOptions(ffmpegCommand, 'snapshot', null);
 
-        command.on('start', (commandLine) => {
+        ffmpegCommand.on('start', (commandLine) => {
             logger.debug('Spawned: ' + commandLine, 'snapshot');
         });
-        command.on('error', (error) => {
+        ffmpegCommand.on('error', (error) => {
             logger.error(error.toString().trim(), 'snapshot');
 
             fetchSnapshot();
         });
-        command.on('end', () => {
+        ffmpegCommand.on('end', () => {
             logger.info('Updated. Next scheduled update in ' + interval + 'ms.', 'snapshot');
             WebsocketsController.emit('snapshot', null);
 
             fetchSnapshot();
         });
-        command.exec();
+        ffmpegCommand.exec();
     }
 
-    static addStreamOptions (command, name, replace) {
+    static addStreamOptions (ffmpegCommand, name, replace) {
         if (!(name in config.ffmpeg.options)) {
             logger.debug('Unknown option: ' + name);
             return;
@@ -143,15 +143,15 @@ class Restreamer {
         };
 
         if ('input' in options) {
-            command.input(replacer(options.input, replace));
+            ffmpegCommand.input(replacer(options.input, replace));
         }
 
         if ('inputOptions' in options) {
-            command.inputOptions(replacer(options.inputOptions, replace));
+            ffmpegCommand.inputOptions(replacer(options.inputOptions, replace));
         }
 
         if ('outputOptions' in options) {
-            command.outputOptions(replacer(options.outputOptions, replace));
+            ffmpegCommand.outputOptions(replacer(options.outputOptions, replace));
         }
     }
 
@@ -286,6 +286,7 @@ class Restreamer {
     /**
      * append the ffmpeg options of the config file to an output
      * @param {FfmpegCommand} ffmpegCommand
+     * @param {string} streamType
      * @return {Promise}
      */
     static probeStream (ffmpegCommand, streamType) {
@@ -386,7 +387,7 @@ class Restreamer {
                             options.audio.push('audio_filter_sampling');
                         }
                     } else {
-                        switch (audio.codec_name) {  // consider all allowed audio codecs for FLV
+                        switch (audio.codec_name) { // consider all allowed audio codecs for FLV
                             case 'mp3':
                             case 'pcm_alaw':
                             case 'pcm_mulaw':
@@ -445,7 +446,7 @@ class Restreamer {
      * update the state of the stream
      * @param {string} streamType
      * @param {string} state
-     * @param {string} message
+     * @param {string=} message
      * @return {string} name of the new state
      */
     static updateState (streamType, state, message) {
@@ -467,6 +468,13 @@ class Restreamer {
         return state;
     }
 
+    /**
+     * set the state of the stream
+     * @param {string} streamType
+     * @param {string} state
+     * @param {string} message
+     * @returns {string} name of the state
+     */
     static setState (streamType, state, message) {
         let previousState = Restreamer.data.states[streamType].type;
 
@@ -554,10 +562,9 @@ class Restreamer {
 
     /**
      *
-     * @param {string} src src-address of the ffmpeg stream
+     * @param {string} streamUrl src-address of the ffmpeg stream
      * @param {string} streamType repeatToOptionalOutput or repeatToLocalNginx
-     * @param {string} optionalOutput address of the optional output
-     * @param {string} force force the start of the stream
+     * @param {boolean=} force force the start of the stream
      */
     static startStream (streamUrl, streamType, force) {
         // remove any running timeouts
@@ -581,7 +588,7 @@ class Restreamer {
             return;
         }
 
-        let command = null;
+        let ffmpegCommand = null;
         let probePromise = null;
 
         logger.info('Start streaming', streamType);
@@ -591,35 +598,35 @@ class Restreamer {
 
         let rtmpUrl = Restreamer.getRTMPStreamUrl();
 
-        if (streamType === 'repeatToLocalNginx') {    // repeat to local nginx server
-            command = new FfmpegCommand(streamUrl, {
+        if (streamType === 'repeatToLocalNginx') { // repeat to local nginx server
+            ffmpegCommand = new FfmpegCommand(streamUrl, {
                 stdoutLines: 1
             });
 
-            Restreamer.addStreamOptions(command, 'global', null);
-            Restreamer.addStreamOptions(command, 'video', null);
-            Restreamer.addStreamOptions(command, 'rtmp', null);
+            Restreamer.addStreamOptions(ffmpegCommand, 'global', null);
+            Restreamer.addStreamOptions(ffmpegCommand, 'video', null);
+            Restreamer.addStreamOptions(ffmpegCommand, 'rtmp', null);
 
             // GUI option
             if (Restreamer.data.options.rtspTcp && streamUrl.indexOf('rtsp') === 0) {
-                Restreamer.addStreamOptions(command, 'rtsp-tcp', null);
+                Restreamer.addStreamOptions(ffmpegCommand, 'rtsp-tcp', null);
             }
 
             // add outputs to the ffmpeg stream
-            command.output(rtmpUrl);
-            probePromise = Restreamer.probeStream(command, streamType);
-        } else {  // repeat to optional output
-            command = new FfmpegCommand(rtmpUrl, {
+            ffmpegCommand.output(rtmpUrl);
+            probePromise = Restreamer.probeStream(ffmpegCommand, streamType);
+        } else { // repeat to optional output
+            ffmpegCommand = new FfmpegCommand(rtmpUrl, {
                 stdoutLines: 1
             });
 
-            Restreamer.addStreamOptions(command, 'global', null);
-            Restreamer.addStreamOptions(command, 'video', null);
-            Restreamer.addStreamOptions(command, 'rtmp', null);
+            Restreamer.addStreamOptions(ffmpegCommand, 'global', null);
+            Restreamer.addStreamOptions(ffmpegCommand, 'video', null);
+            Restreamer.addStreamOptions(ffmpegCommand, 'rtmp', null);
 
             // add outputs to the ffmpeg stream
-            command.output(streamUrl);
-            probePromise = Restreamer.probeStream(command, streamType);
+            ffmpegCommand.output(streamUrl);
+            probePromise = Restreamer.probeStream(ffmpegCommand, streamType);
         }
 
         if (probePromise === null) {
@@ -645,7 +652,7 @@ class Restreamer {
         // current number of processed frames for stale detection
         let nFrames = -1;
 
-        // after adding outputs, define events on the new FFmpeg stream
+        // after adding outputs, define events on the new ffmpeg stream
         probePromise.then((options) => {
             let replaceVideo = {
                 videoid: Restreamer.data.options.video.id,
@@ -658,7 +665,7 @@ class Restreamer {
             };
 
             for (let o in options.video) {
-                Restreamer.addStreamOptions(command, options.video[o], replaceVideo);
+                Restreamer.addStreamOptions(ffmpegCommand, options.video[o], replaceVideo);
             }
 
             let replaceAudio = {
@@ -669,12 +676,12 @@ class Restreamer {
             };
 
             for (let o in options.audio) {
-                Restreamer.addStreamOptions(command, options.audio[o], replaceAudio);
+                Restreamer.addStreamOptions(ffmpegCommand, options.audio[o], replaceAudio);
             }
 
-            command
+            ffmpegCommand
                 .on('start', (commandLine) => {
-                    Restreamer.data.processes[streamType] = command;
+                    Restreamer.data.processes[streamType] = ffmpegCommand;
 
                     if (Restreamer.data.userActions[streamType] === 'stop') {
                         Restreamer.stopStream(streamType);
@@ -748,7 +755,7 @@ class Restreamer {
                     }
                 });
 
-            command.exec();
+            ffmpegCommand.exec();
         }).catch((error) => {
             logger.debug(`Failed to spawn ffmpeg: ${error.toString()}`, streamType);
 
@@ -769,7 +776,7 @@ class Restreamer {
      * @param {string} streamType Either 'repeatToLocalNginx' or 'repeatToOptionalOutput'
      * @param {string} target Kind of timeout, either 'retry' or 'stale'
      * @param {function} func Callback function
-     * @param {int} delay Delay for the timeout
+     * @param {int=} delay Delay for the timeout
      * @return {void}
      */
     static setTimeout (streamType, target, func, delay) {
