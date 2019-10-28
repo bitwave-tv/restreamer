@@ -22,7 +22,7 @@ class WebsocketsController {
      */
     static emit (event, data) {
         app.get('websocketsReady').promise.then((io) => {
-            logger.debug('Emitting ' + event);
+            logger.debug(`Emitting ${event}`);
             io.sockets.emit(event, data);
         });
     }

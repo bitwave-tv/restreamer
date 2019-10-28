@@ -24,22 +24,21 @@ class RestreamerData {
     static checkJSONDb () {
         let schemadata = {};
         let dbdata = {};
-        var deferred = Q.defer();
-        var readSchema = Q.nfcall(fs.readFile, path.join(confPath, schemaFile));
-        var readDBFile = Q.nfcall(fs.readFile, path.join(dbPath, dbFile));
+        const deferred = Q.defer();
+        let readSchema = Q.nfcall(fs.readFile, path.join(confPath, schemaFile));
+        let readDBFile = Q.nfcall(fs.readFile, path.join(dbPath, dbFile));
 
         logger.info('Checking jsondb file...');
         readSchema
             .then((s) => {
-                schemadata = JSON.parse(s.toString('utf8'));
+                schemadata = JSON.parse(s.toString());
                 return readDBFile;
             })
             .then((d) => {
-                dbdata = JSON.parse(d.toString('utf8'));
+                dbdata = JSON.parse(d.toString());
                 let v = new Validator();
                 let instance = dbdata;
-                let schema = schemadata;
-                let validateResult = v.validate(instance, schema);
+                let validateResult = v.validate(instance, schemadata);
 
                 if (validateResult.errors.length > 0) {
                     logger.debug(`Validation error of v1.db: ${JSON.stringify(validateResult.errors)}`);
@@ -125,7 +124,7 @@ class RestreamerData {
                 }
             })
             .catch((error) => {
-                var defaultStructure = {
+                const defaultStructure = {
                     addresses: {
                         srcAddress: '',
                         optionalOutputAddress: ''
@@ -174,7 +173,7 @@ class RestreamerData {
                 };
 
                 // Set stream source and start streaming on a fresh installation
-                if (process.env.RS_INPUTSTREAM != '') {
+                if (process.env.RS_INPUTSTREAM !== '') {
                     defaultStructure.addresses.srcAddress = process.env.RS_INPUTSTREAM;
                     defaultStructure.states.repeatToLocalNginx.type = 'connected';
                     defaultStructure.userActions.repeatToLocalNginx = 'start';

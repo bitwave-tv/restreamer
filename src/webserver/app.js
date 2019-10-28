@@ -110,7 +110,7 @@ class RestreamerExpressApp {
      */
     add404ErrorHandling () {
         this.app.use((req, res, next) => {
-            var err = new Error('Not Found ' + req.url);
+            const err = new Error(`Not Found ${req.url}`);
             err.status = 404;
             next(err);
         });

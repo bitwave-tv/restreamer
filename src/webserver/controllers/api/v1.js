@@ -14,22 +14,24 @@ const version = require(require('path').join(global.__base, 'package.json')).ver
 
 router.get('/version', (req, res) => {
     res.json({
-        'version': version,
-        'update': require.main.require('./classes/Restreamer').data.updateAvailable
+        version: version,
+        update: require.main.require('./classes/Restreamer').data.updateAvailable,
     });
 });
+
 router.get('/ip', (req, res) => {
     res.end(require.main.require('./classes/Restreamer').data.publicIp);
 });
+
 router.get('/states', (req, res) => {
     const states = require.main.require('./classes/Restreamer').data.states;
 
     const response = {
-        'repeat_to_local_nginx': {
+        repeat_to_local_nginx: {
             type: states.repeatToLocalNginx.type,
             message: states.repeatToLocalNginx.message.replace(/\?token=[^\s]+/, '?token=***'),
         },
-        'repeat_to_optional_output': {
+        repeat_to_optional_output: {
             type: states.repeatToOptionalOutput.type,
             message: states.repeatToOptionalOutput.message.replace(/\?token=[^\s]+/, '?token=***'),
         },
@@ -37,24 +39,25 @@ router.get('/states', (req, res) => {
 
     res.json(response);
 });
+
 router.get('/progresses', (req, res) => {
     const progresses = require.main.require('./classes/Restreamer').data.progresses;
 
     res.json({
-        'repeat_to_local_nginx': {
-            'frames': progresses.repeatToLocalNginx.frames,
-            'current_fps': progresses.repeatToLocalNginx.currentFps,
-            'current_kbps': progresses.repeatToLocalNginx.currentKbps,
-            'target_size': progresses.repeatToLocalNginx.targetSize,
-            'timemark': progresses.repeatToLocalNginx.timemark
+        repeat_to_local_nginx: {
+            frames: progresses.repeatToLocalNginx.frames,
+            current_fps: progresses.repeatToLocalNginx.currentFps,
+            current_kbps: progresses.repeatToLocalNginx.currentKbps,
+            target_size: progresses.repeatToLocalNginx.targetSize,
+            timemark: progresses.repeatToLocalNginx.timemark,
         },
-        'repeat_to_optional_output': {
-            'frames': progresses.repeatToOptionalOutput.frames,
-            'current_fps': progresses.repeatToOptionalOutput.currentFps,
-            'current_kbps': progresses.repeatToOptionalOutput.currentKbps,
-            'target_size': progresses.repeatToOptionalOutput.targetSize,
-            'timemark': progresses.repeatToOptionalOutput.timemark
-        }
+        repeat_to_optional_output: {
+            frames: progresses.repeatToOptionalOutput.frames,
+            current_fps: progresses.repeatToOptionalOutput.currentFps,
+            current_kbps: progresses.repeatToOptionalOutput.currentKbps,
+            target_size: progresses.repeatToOptionalOutput.targetSize,
+            timemark: progresses.repeatToOptionalOutput.timemark,
+        },
     });
 });
 

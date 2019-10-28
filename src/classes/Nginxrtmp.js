@@ -25,7 +25,6 @@ class Nginxrtmp {
     constructor (config) {
         this.config = config;
         this.logger = logger;
-
         this.process = null;        // Process handler
         this.allowRestart = false;  // Whether to allow restarts. Restarts are not allowed until the first successful start
     }
@@ -39,7 +38,7 @@ class Nginxrtmp {
         let timeout = 250;
         let abort = false;
 
-        if (useSSL == false) {
+        if (useSSL === false) {
             this.process = spawn(this.config.nginx.command, this.config.nginx.args);
         }
         else {
@@ -52,7 +51,7 @@ class Nginxrtmp {
 
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i].replace(/^.*\]/, '').trim();
-                if (line.length == 0) {
+                if (line.length === 0) {
                     continue;
                 }
 
@@ -65,7 +64,7 @@ class Nginxrtmp {
 
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i].replace(/^.*\]/, '').trim();
-                if (line.length == 0) {
+                if (line.length === 0) {
                     continue;
                 }
 
@@ -82,7 +81,7 @@ class Nginxrtmp {
                 return;
             }
 
-            if (this.allowRestart == true) {
+            if (this.allowRestart === true) {
                 let self = this;
                 setTimeout(() => {
                     self.logger.info('Trying to restart ...');
@@ -97,14 +96,14 @@ class Nginxrtmp {
 
         let running = false;
 
-        while (running == false){
+        while (running === false){
             running = await this.isRunning(timeout);
-            if(abort == true) {
+            if(abort === true) {
                 break;
             }
         }
 
-        if (running == false) {
+        if (running === false) {
             this.process = null;
             throw new Error('Failed to start');
         }
@@ -126,7 +125,7 @@ class Nginxrtmp {
         try {
             await Q.delay(delay); // delay the state detection by the given amount of milliseconds
             const response = await rp(url);
-            return (response == 'pong');
+            return (response === 'pong');
         } catch(error) {
             return false;
         }
