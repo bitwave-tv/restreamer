@@ -52,12 +52,12 @@ class RestreamerExpressApp {
      */
     useSessions () {
         this.app.use(session({
-            'resave': true,
-            'saveUninitialized': false,
-            'key': this.sessionKey,
-            'secret': this.secretKey,
-            'unset': 'destroy',
-            'store': this.sessionStore
+            resave: true,
+            saveUninitialized: false,
+            key: this.sessionKey,
+            secret: this.secretKey,
+            unset: 'destroy',
+            store: this.sessionStore
         }));
     }
 
@@ -124,8 +124,8 @@ class RestreamerExpressApp {
             logger.error(err);
             res.status(err.status || 500);
             res.send({
-                'message': err.message,
-                'error': {}
+                message: err.message,
+                error: {}
             });
         });
     }
@@ -166,7 +166,7 @@ class RestreamerExpressApp {
 
             // promise to avoid ws binding before the webserver has been started
             this.app.get('websocketsReady').resolve(this.app.get('io'));
-            logger.info('Running on port ' + process.env.RS_NODEJS_PORT);
+            logger.info(`Running on port ${process.env.RS_NODEJS_PORT}`);
             deferred.resolve(server.address().port);
         });
 

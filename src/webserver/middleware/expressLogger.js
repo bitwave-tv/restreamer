@@ -11,7 +11,7 @@ const logger = require.main.require('./classes/Logger')('Webserver');
 
 module.exports = (req, res, next) => {
     req._startTime = new Date();
-    var log = () => {
+    const log = () => {
         let code = res.statusCode;
         let len = parseInt(res.getHeader('Content-Length'), 10);
         let duration = new Date() - req._startTime;
@@ -22,7 +22,7 @@ module.exports = (req, res, next) => {
             len = '-';
         }
 
-        logger.debug(method + ' "' + url + '" ' + code + ' ' + duration + 'ms ' + req.ip + ' ' + len);
+        logger.debug(`${method} "${url}" ${code} ${duration}ms ${req.ip} ${len}`);
     };
 
     res.on('finish', log);

@@ -39,11 +39,11 @@ class Logger {
 
         this.debuglog = null;
 
-        if(process.env.RS_DEBUG == 'true') {
+        if (process.env.RS_DEBUG == 'true') {
             let identifier = process.pid + '-' + process.platform + '-' + process.arch;
             try {
                 this.debuglog = fs.openSync('/restreamer/src/webserver/public/debug/Restreamer-' + identifier + '.txt', 'a');
-            } catch(err) {
+            } catch (err) {
                 this.debuglog = null;
                 this.stdout('Error opening debug file ' + identifier + ': ' + err, context, 'INFO');
             } finally {
@@ -52,11 +52,11 @@ class Logger {
         }
     }
 
-    logline(message, context, type) {
+    logline (message, context, type) {
         let time = moment().tz(process.env.RS_TIMEZONE).format('DD-MM-YYYY HH:mm:ss.SSS');
 
         let logline = '';
-        if(context) {
+        if (context) {
             logline = printf('[%s] [%-5s] [%22s] %s', time, type, context, message);
         } else {
             logline = printf('[%s] [%-5s] %s', time, type, message);
@@ -72,7 +72,7 @@ class Logger {
      * @param {string} type
      */
     stdout (message, context, type) {
-        if(Logger.isMuted()) {
+        if (Logger.isMuted()) {
             return;
         }
 
@@ -90,10 +90,10 @@ class Logger {
     file (message, context, type) {
         let logline = this.logline(message, context, type);
 
-        if(this.debuglog !== null) {
+        if (this.debuglog !== null) {
             fs.appendFile(this.debuglog, logline + '\n', 'utf8', (err) => {
                 // ignore errors
-                if(err) {
+                if (err) {
                     return;
                 }
 
@@ -124,7 +124,7 @@ class Logger {
             loggerAlertGui = false;
         }
 
-        if(process.env.RS_DEBUG == 'true') {
+        if (process.env.RS_DEBUG == 'true') {
             this.file(message, loggerContext, 'INFO');
         }
 
@@ -156,7 +156,7 @@ class Logger {
             loggerAlertGui = false;
         }
 
-        if(process.env.RS_DEBUG == 'true') {
+        if (process.env.RS_DEBUG == 'true') {
             this.file(message, loggerContext, 'WARN');
         }
 
@@ -188,7 +188,7 @@ class Logger {
             loggerAlertGui = false;
         }
 
-        if(process.env.RS_DEBUG == 'true') {
+        if (process.env.RS_DEBUG == 'true') {
             this.file(message, loggerContext, 'DEBUG');
         }
 
@@ -221,7 +221,7 @@ class Logger {
             loggerAlertGui = false;
         }
 
-        if(process.env.RS_DEBUG == 'true') {
+        if (process.env.RS_DEBUG == 'true') {
             this.file(message, loggerContext, 'ERROR');
         }
 

@@ -8,7 +8,7 @@
 'use strict';
 
 const path = require('path');
-var auth = require(require('path').join(global.__base, 'conf', 'live.json')).auth;
+const auth = require(require('path').join(global.__base, 'conf', 'live.json')).auth;
 
 module.exports = (app) => {
     /* Handle Login POST */
@@ -26,8 +26,8 @@ module.exports = (app) => {
             success = false;
         }
         res.json({
-            'success': success,
-            'message': message
+            success: success,
+            message: message
         });
     });
     app.get('/authenticated', (req, res) => {
@@ -39,9 +39,9 @@ module.exports = (app) => {
     });
     /* Handle NGINX-RTMP token */
     app.get('/token', (req, res) => {
-        var token = process.env.RS_TOKEN || auth.token;
-        if (token != '') {
-            if (req.query.token == token) {
+        const token = process.env.RS_TOKEN || auth.token;
+        if (token) {
+            if (req.query.token === token) {
                 res.writeHead(200, {
                     'Content-Type': 'text/plain'
                 });
@@ -60,6 +60,3 @@ module.exports = (app) => {
         }
     });
 };
-
-
-

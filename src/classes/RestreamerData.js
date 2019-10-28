@@ -48,7 +48,7 @@ class RestreamerData {
                     logger.debug('"v1.db" is valid');
 
                     // Fill up optional fields if not present
-                    if(!('video' in dbdata.options)) {
+                    if (!('video' in dbdata.options)) {
                         dbdata.options.video = {
                             codec: 'copy',
                             preset: 'ultrafast',
@@ -59,7 +59,7 @@ class RestreamerData {
                         };
                     }
 
-                    if(!('audio' in dbdata.options)) {
+                    if (!('audio' in dbdata.options)) {
                         dbdata.options.audio = {
                             codec: 'auto',
                             preset: 'silence',
@@ -69,7 +69,7 @@ class RestreamerData {
                         };
 
                         // Update the defaults according to RS_AUDIO
-                        switch(process.env.RS_AUDIO) {
+                        switch (process.env.RS_AUDIO) {
                             case 'auto':
                                 dbdata.options.audio.codec = 'auto';
                                 break;
@@ -102,7 +102,7 @@ class RestreamerData {
                         }
                     }
 
-                    if(!('player' in dbdata.options)) {
+                    if (!('player' in dbdata.options)) {
                         dbdata.options.player = {
                             autoplay: false,
                             mute: false,
@@ -174,7 +174,7 @@ class RestreamerData {
                 };
 
                 // Set stream source and start streaming on a fresh installation
-                if(process.env.RS_INPUTSTREAM != '') {
+                if (process.env.RS_INPUTSTREAM != '') {
                     defaultStructure.addresses.srcAddress = process.env.RS_INPUTSTREAM;
                     defaultStructure.states.repeatToLocalNginx.type = 'connected';
                     defaultStructure.userActions.repeatToLocalNginx = 'start';

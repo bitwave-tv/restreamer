@@ -22,7 +22,7 @@ class Nginxrtmp {
      * Constructs the NGINX rtmp with injection of config to use
      * @param config
      */
-    constructor(config) {
+    constructor (config) {
         this.config = config;
         this.logger = logger;
 
@@ -34,7 +34,7 @@ class Nginxrtmp {
      * Start the NGINX server
      * @returns {Promise.<boolean>}
      */
-    async start(useSSL) {
+    async start (useSSL) {
         this.logger.info('Starting ...');
         let timeout = 250;
         let abort = false;
@@ -76,7 +76,7 @@ class Nginxrtmp {
         this.process.on('close', (code) => {
             abort = true;
 
-            this.logger.error('Exited with code: ' + code);
+            this.logger.error(`Exited with code: ${code}`);
 
             if(code < 0) {
                 return;
@@ -92,7 +92,7 @@ class Nginxrtmp {
         });
 
         this.process.on('error', (err) => {
-            this.logger.error('Failed to spawn process: ' + err.name + ': ' + err.message);
+            this.logger.error(`Failed to spawn process: ${err.name}: ${err.message}`);
         });
 
         let running = false;
@@ -120,8 +120,8 @@ class Nginxrtmp {
      * Get current state of the NGINX server
      * @returns {Promise.<boolean>}
      */
-    async isRunning(delay) {
-        const url = "http://" + config.nginx.streaming.ip + ":" +  config.nginx.streaming.http_port  +  config.nginx.streaming.http_health_path;
+    async isRunning (delay) {
+        const url = `http://${config.nginx.streaming.ip}:${config.nginx.streaming.http_port}${config.nginx.streaming.http_health_path}`;
 
         try {
             await Q.delay(delay); // delay the state detection by the given amount of milliseconds
