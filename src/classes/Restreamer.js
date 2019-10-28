@@ -28,24 +28,24 @@ class Restreamer {
      * generate output hls-path from config-file
      * @returns {string}
      */
-    static getRTMPStreamUrl() {
+    static getRTMPStreamUrl () {
         let nginx = config.nginx.streaming;
         let token = process.env.RS_TOKEN || config.auth.token;
 
-        let path = 'rtmp://' + nginx.ip + ':' + nginx.rtmp_port + nginx.rtmp_hls_path + 'live.stream';
+        let url = `rtmp://${nginx.ip}:${nginx.rtmp_port}${nginx.rtmp_hls_path}live.stream`;
 
-        if(token != '') {
-            path += '?token=' + token;
+        if (token !== '') {
+            url += '?token=' + token;
         }
 
-        return path;
+        return url;
     }
 
     /**
      * generate output snapshot-path from config-file
      * @returns {string}
      */
-    static getSnapshotPath() {
+    static getSnapshotPath () {
         return path.join(global.__public, 'images', 'live.jpg');
     }
 
@@ -53,28 +53,28 @@ class Restreamer {
      * receive snapshot by using first frame of repeated video
      */
     static fetchSnapshot () {
-        if(Restreamer.data.states.repeatToLocalNginx.type != 'connected') {
+        if (Restreamer.data.states.repeatToLocalNginx.type !== 'connected') {
             logger.debug('Disabled, because stream is not connected', 'snapshot');
             return;
         }
 
         let interval = Restreamer.getSnapshotInterval();
-        if(interval == 0) {
+        if (interval === 0) {
             logger.info('Disabled', 'snapshot');
             return;
         }
 
-        var startTime = Date.now();
-        var fetchSnapshot = function() {
+        const startTime = Date.now();
+        const fetchSnapshot = function () {
             let elapsed = Date.now() - startTime;
-            if(elapsed <= interval) {
+            if (elapsed <= interval) {
                 interval -= elapsed;
             }
 
             Restreamer.setTimeout('repeatToLocalNginx', 'snapshot', () => {
                 Restreamer.fetchSnapshot();
             }, interval);
-        }
+        };
 
         let command = new FfmpegCommand(Restreamer.getRTMPStreamUrl());
 
@@ -100,8 +100,8 @@ class Restreamer {
         command.exec();
     }
 
-    static addStreamOptions(command, name, replace) {
-        if(!(name in config.ffmpeg.options)) {
+    static addStreamOptions (command, name, replace) {
+        if (!(name in config.ffmpeg.options)) {
             logger.debug('Unknown option: ' + name);
             return;
         }
@@ -110,29 +110,28 @@ class Restreamer {
 
         let options = config.ffmpeg.options[name];
 
-        let replacer = function(options, replace) {
-            if(replace == null) {
+        let replacer = function (options, replace) {
+            if (replace == null) {
                 return options;
             }
 
             let replaced_options = [];
 
-            if(typeof options != 'string') {
-                for(let i = 0; i < options.length; i++) {
+            if (typeof options != 'string') {
+                for (let i = 0; i < options.length; i++) {
                     let option = options[i];
-                    for(let r in replace) {
-                        if(option.indexOf('{'+r+'}') != -1) {
+                    for (let r in replace) {
+                        if (option.indexOf('{'+r+'}') != -1) {
                             logger.debug('Replacing {'+r+'} with "'+replace[r]+'" in: '+option);
                             option = option.replace('{'+r+'}', replace[r]);
                         }
                     }
                     replaced_options.push(option);
                 }
-            }
-            else {
+            } else {
                 let option = options;
-                for(let r in replace) {
-                    if(options.indexOf('{'+r+'}') != -1) {
+                for (let r in replace) {
+                    if (options.indexOf('{'+r+'}') != -1) {
                         logger.debug('Replacing {'+r+'} with "'+replace[r]+'" in: '+option);
                         option = option.replace('{'+r+'}', replace[r]);
                     }
@@ -141,33 +140,33 @@ class Restreamer {
             }
 
             return replaced_options;
-        }
+        };
 
-        if('input' in options) {
+        if ('input' in options) {
             command.input(replacer(options.input, replace));
         }
 
-        if('inputOptions' in options) {
+        if ('inputOptions' in options) {
             command.inputOptions(replacer(options.inputOptions, replace));
         }
 
-        if('outputOptions' in options) {
+        if ('outputOptions' in options) {
             command.outputOptions(replacer(options.outputOptions, replace));
         }
     }
 
-    static getSnapshotInterval() {
-        let minimalInterval = 10000;    // 10 seconds
-        let defaultInterval = 60000;    // 60 seconds
+    static getSnapshotInterval () {
+        const minimalInterval = 10000;    // 10 seconds
+        const defaultInterval = 60000;    // 60 seconds
         let parsedInterval = process.env.RS_SNAPSHOT_INTERVAL.match(/^([0-9]+)(m|s|ms)?$/);
 
         let interval = defaultInterval;
 
-        if(parsedInterval !== null) {
+        if (parsedInterval !== null) {
             interval = parsedInterval[1];
 
-            if(parsedInterval.length == 3) {
-                switch(parsedInterval[2]) {
+            if (parsedInterval.length === 3) {
+                switch (parsedInterval[2]) {
                     case 'm':
                         interval *= 1000 * 60;
                         break;
@@ -180,15 +179,13 @@ class Restreamer {
                         break;
                 }
             }
-        }
-        else {
+        } else {
             logger.warn('Invalid value for interval. Using default.', 'snapshot');
         }
 
-        if(interval == 0) {
+        if (interval === 0) {
             return 0;   // disable snapshots
-        }
-        else if(interval < minimalInterval) {
+        } else if (interval < minimalInterval) {
             interval = minimalInterval;
         }
 
@@ -199,11 +196,11 @@ class Restreamer {
      * stop stream
      * @param {string} streamType
      */
-    static stopStream(streamType) {
+    static stopStream (streamType) {
         Restreamer.updateState(streamType, 'stopped');
         logger.info('Stop streaming', streamType);
 
-        if(Restreamer.data.processes[streamType] !== null) {
+        if (Restreamer.data.processes[streamType] !== null) {
             Restreamer.data.processes[streamType].kill('SIGKILL');
             Restreamer.data.processes[streamType] = null;
         }
@@ -213,7 +210,7 @@ class Restreamer {
      * restore the ffmpeg processes from jsondb (called on app start to restore ffmpeg processes
      * after the application has been killed or stuff
      */
-    static restoreProcesses() {
+    static restoreProcesses () {
         var db = new JsonDB(config.jsondb, true, false);
 
         Restreamer.data.addresses = db.getData('/addresses');
@@ -232,27 +229,25 @@ class Restreamer {
         let repeatToOptionalOutputReconnecting = (state == 'connected' || state == 'connecting');
 
         // check if a stream was repeated locally
-        if(Restreamer.data.addresses.srcAddress && repeatToLocalNginxReconnecting) {
+        if (Restreamer.data.addresses.srcAddress && repeatToLocalNginxReconnecting) {
             Restreamer.startStream(
                 Restreamer.data.addresses.srcAddress,
                 'repeatToLocalNginx',
                 true
             );
-        }
-        else {
-            Restreamer.updateState('repeatToLocalNginx', 'disconnected')
+        } else {
+            Restreamer.updateState('repeatToLocalNginx', 'disconnected');
         }
 
         // check if the stream was repeated to an output address
-        if(Restreamer.data.addresses.optionalOutputAddress && repeatToOptionalOutputReconnecting) {
+        if (Restreamer.data.addresses.optionalOutputAddress && repeatToOptionalOutputReconnecting) {
             Restreamer.startStream(
                 Restreamer.data.addresses.optionalOutputAddress,
                 'repeatToOptionalOutput',
                 true
             );
-        }
-        else {
-            Restreamer.updateState('repeatToOptionalOutput', 'disconnected')
+        } else {
+            Restreamer.updateState('repeatToOptionalOutput', 'disconnected');
         }
     }
 
@@ -260,7 +255,7 @@ class Restreamer {
      * write JSON file for persistence
      */
     static writeToDB () {
-        var db = new JsonDB(config.jsondb, true, false);
+        const db = new JsonDB(config.jsondb, true, false);
 
         db.push('/', Restreamer.dataForJsonDb());
     }
@@ -293,17 +288,17 @@ class Restreamer {
      * @param {FfmpegCommand} ffmpegCommand
      * @return {Promise}
      */
-    static probeStream(ffmpegCommand, streamType) {
+    static probeStream (ffmpegCommand, streamType) {
         var deferred = Q.defer();
 
         let state = Restreamer.getState(streamType);
-        if(state != 'connecting') {
-            logger.debug('Skipping "startStream" because state is not "connecting". Current state is "' + state + '".', streamType);
+        if (state != 'connecting') {
+            logger.debug(`Skipping "startStream" because state is not "connecting". Current state is "${state}".`, streamType);
             return null;
         }
 
         ffmpegCommand.ffprobe((err, data) => {
-            if(err) {
+            if (err) {
                 let lines = err.toString().split(/\r\n|\r|\n/);
                 lines = lines.filter(function (line) {
                     return line.length > 0;
@@ -315,38 +310,37 @@ class Restreamer {
             let video = null;
             let audio = null;
 
-            for(let s of data.streams) {
-                if(s.codec_type == 'video') {
-                    if(video === null) {
+            for (let s of data.streams) {
+                if (s.codec_type == 'video') {
+                    if (video === null) {
                         video = s;
                         continue;
                     }
 
                     // Select the video stream with the highest number of pixels
-                    if((s.width * s.height) > (video.width * video.height)) {
+                    if ((s.width * s.height) > (video.width * video.height)) {
                         video = s;
                     }
-                }
-                else if(s.codec_type == 'audio') {
-                    if(audio === null) {
+                } else if (s.codec_type == 'audio') {
+                    if (audio === null) {
                         audio = s;
                         continue;
                     }
 
                     // Select the audio stream with highest number of channels
-                    if(s.channels > audio.channels) {
+                    if (s.channels > audio.channels) {
                         audio = s;
                     }
                 }
             }
 
-            if(video === null) {
-                return deferred.reject("no video stream detected");
+            if (video === null) {
+                return deferred.reject('no video stream detected');
             }
 
             Restreamer.data.options.video.id = video.index;
             Restreamer.data.options.audio.id = 'a';
-            if(audio !== null) {
+            if (audio !== null) {
                 Restreamer.data.options.audio.id = audio.index;
             }
 
@@ -355,52 +349,46 @@ class Restreamer {
                 video: []
             };
 
-            if(streamType == 'repeatToLocalNginx') {
-                if(Restreamer.data.options.video.codec == 'h264') {
+            if (streamType == 'repeatToLocalNginx') {
+                if (Restreamer.data.options.video.codec == 'h264') {
                     options.video.push('video_codec_h264');
 
-                    if(Restreamer.data.options.video.profile != 'auto') {
+                    if (Restreamer.data.options.video.profile != 'auto') {
                         options.video.push('video_codec_h264_profile');
                     }
 
-                    if(Restreamer.data.options.video.tune != 'none') {
+                    if (Restreamer.data.options.video.tune != 'none') {
                         options.video.push('video_codec_h264_tune');
                     }
-                }
-                else {
-                    if(video.codec_name != 'h264') {
-                        return deferred.reject("video stream must be h264, found " + video.codec_name);
+                } else {
+                    if (video.codec_name != 'h264') {
+                        return deferred.reject(`video stream must be h264, found ${video.codec_name}`);
                     }
 
                     options.video.push('video_codec_copy');
                 }
 
-                if(audio !== null) {
-                    if(Restreamer.data.options.audio.codec == 'none') {
+                if (audio !== null) {
+                    if (Restreamer.data.options.audio.codec == 'none') {
                         options.audio.push('audio_codec_none');
-                    }
-                    else if(Restreamer.data.options.audio.codec == 'aac' || Restreamer.data.options.audio.codec == 'mp3') {
-                        if(Restreamer.data.options.audio.codec == 'aac') {
+                    } else if (Restreamer.data.options.audio.codec == 'aac' || Restreamer.data.options.audio.codec == 'mp3') {
+                        if (Restreamer.data.options.audio.codec == 'aac') {
                             options.audio.push('audio_codec_aac');
-                        }
-                        else {
+                        } else {
                             options.audio.push('audio_codec_mp3');
                         }
 
                         options.audio.push('audio_preset_' + Restreamer.data.options.audio.preset);
 
-                        if(Restreamer.data.options.audio.channels != 'inherit' && Restreamer.data.options.audio.sampling != 'inherit') {
+                        if (Restreamer.data.options.audio.channels != 'inherit' && Restreamer.data.options.audio.sampling != 'inherit') {
                             options.audio.push('audio_filter_all');
-                        }
-                        else if(Restreamer.data.options.audio.channels != 'inherit') {
+                        } else if (Restreamer.data.options.audio.channels != 'inherit') {
                             options.audio.push('audio_filter_channels');
-                        }
-                        else if(Restreamer.data.options.audio.sampling != 'inherit') {
+                        } else if (Restreamer.data.options.audio.sampling != 'inherit') {
                             options.audio.push('audio_filter_sampling');
                         }
-                    }
-                    else {
-                        switch(audio.codec_name) {  // consider all allowed audio codecs for FLV
+                    } else {
+                        switch (audio.codec_name) {  // consider all allowed audio codecs for FLV
                             case 'mp3':
                             case 'pcm_alaw':
                             case 'pcm_mulaw':
@@ -412,46 +400,39 @@ class Restreamer {
                                 options.audio.push('audio_preset_copy');
                                 break;
                             default:
-                                if(Restreamer.data.options.audio.codec == 'copy') {
-                                    return deferred.reject("can't copy audio stream, found unsupported codec " + audio.codec_name);
-                                }
-                                else {
+                                if (Restreamer.data.options.audio.codec == 'copy') {
+                                    return deferred.reject(`can't copy audio stream, found unsupported codec ${audio.codec_name}`);
+                                } else {
                                     options.audio.push('audio_codec_aac');
                                     options.audio.push('audio_preset_encode');
                                 }
                         }
                     }
-                }
-                else {
-                    if(Restreamer.data.options.audio.codec == 'aac' || Restreamer.data.options.audio.codec == 'auto') {
+                } else {
+                    if (Restreamer.data.options.audio.codec == 'aac' || Restreamer.data.options.audio.codec == 'auto') {
                         options.audio.push('audio_codec_aac');
                         options.audio.push('audio_preset_silence');
                         options.audio.push('audio_filter_all');
-                    }
-                    else if(Restreamer.data.options.audio.codec == 'mp3') {
+                    } else if (Restreamer.data.options.audio.codec == 'mp3') {
                         options.audio.push('audio_codec_mp3');
                         options.audio.push('audio_preset_silence');
                         options.audio.push('audio_filter_all');
-                    }
-                    else {
+                    } else {
                         options.audio.push('audio_codec_none');
                     }
                 }
-            }
-            else {
+            } else {
                 options.video.push('video_codec_copy');
 
-                if(audio !== null) {
-                    if(audio.codec_name == 'aac') {
+                if (audio !== null) {
+                    if (audio.codec_name == 'aac') {
                         options.audio.push('audio_codec_copy_aac');
-                    }
-                    else {
+                    } else {
                         options.audio.push('audio_codec_copy');
                     }
 
                     options.audio.push('audio_preset_copy');
-                }
-                else {
+                } else {
                     options.audio.push('audio_codec_none');
                 }
             }
@@ -469,16 +450,16 @@ class Restreamer {
      * @param {string} message
      * @return {string} name of the new state
      */
-    static updateState(streamType, state, message) {
+    static updateState (streamType, state, message) {
         let previousState = Restreamer.setState(streamType, state, message);
 
-        if(previousState == state) {
+        if (previousState == state) {
             return state;
         }
 
-        logger.debug('Update state from "' + previousState + '" to "' + state + '"', streamType);
+        logger.debug(`Update state from "${previousState}" to "${state}"`, streamType);
 
-        if(streamType === 'repeatToLocalNginx' && state === 'connected') {
+        if (streamType === 'repeatToLocalNginx' && state === 'connected') {
             Restreamer.fetchSnapshot();
         }
 
@@ -488,10 +469,10 @@ class Restreamer {
         return state;
     }
 
-    static setState(streamType, state, message) {
+    static setState (streamType, state, message) {
         let previousState = Restreamer.data.states[streamType].type;
 
-        if(typeof message != 'string') {
+        if (typeof message != 'string') {
             message = '';
         }
 
@@ -508,7 +489,7 @@ class Restreamer {
      * @param {string} streamType
      * @return {string} name of the new state
      */
-    static getState(streamType) {
+    static getState (streamType) {
         return Restreamer.data.states[streamType].type;
     }
 
@@ -517,7 +498,7 @@ class Restreamer {
      * @param {string} streamType
      * @return {string} name of the user action
      */
-    static getUserAction(streamType) {
+    static getUserAction (streamType) {
         return Restreamer.data.userActions[streamType];
     }
 
@@ -527,7 +508,7 @@ class Restreamer {
      * @param {string} action
      * @return {string} name of the previous user action
      */
-    static setUserAction(streamType, action) {
+    static setUserAction (streamType, action) {
         let previousAction = Restreamer.data.userActions[streamType];
         Restreamer.data.userActions[streamType] = action;
         return previousAction;
@@ -539,14 +520,14 @@ class Restreamer {
      * @param {string} action user action
      * @return {string} name of the new user action
      */
-    static updateUserAction(streamType, action) {
+    static updateUserAction (streamType, action) {
         let previousAction = Restreamer.setUserAction(streamType, action);
 
-        if(previousAction == action) {
+        if (previousAction == action) {
             return action;
         }
 
-        logger.debug('Set user action from "' + previousAction + '" to "' + action +'"', streamType);
+        logger.debug(`Set user action from "${previousAction}" to "${action}"`, streamType);
 
         Restreamer.writeToDB();
         Restreamer.updateStreamDataOnGui();
@@ -554,7 +535,7 @@ class Restreamer {
         return action;
     }
 
-    static updatePlayerOptions(player) {
+    static updatePlayerOptions (player) {
         Restreamer.data.options.player = player;
 
         logger.debug('Storing player options', 'Restreamer');
@@ -580,23 +561,23 @@ class Restreamer {
      * @param {string} optionalOutput address of the optional output
      * @param {string} force force the start of the stream
      */
-    static startStream(streamUrl, streamType, force) {
+    static startStream (streamUrl, streamType, force) {
         // remove any running timeouts
         Restreamer.setTimeout(streamType, 'retry', null);
         Restreamer.setTimeout(streamType, 'stale', null);
 
         force = force || false;
-        if(force != true) {
+        if (force != true) {
             // check if there's currently no other stream connected or connecting
             let state = Restreamer.getState(streamType);
-            if(state == 'connected' || state == 'connecting') {
-                logger.debug('Skipping "startStream" because state is "connected" or "connecting". Current state is "' + state + '".', streamType);
+            if (state == 'connected' || state == 'connecting') {
+                logger.debug(`Skipping "startStream" because state is "connected" or "connecting". Current state is "${state}".`, streamType);
                 return;
             }
         }
 
         // check if the user has clicked 'stop' meanwhile, so the startStream process has to be skipped
-        if(Restreamer.getUserAction(streamType) == 'stop') {
+        if (Restreamer.getUserAction(streamType) == 'stop') {
             Restreamer.stopStream(streamType);
             logger.debug('Skipping "startStream" because "stop" has been clicked', streamType);
             return;
@@ -612,7 +593,7 @@ class Restreamer {
 
         let rtmpUrl = Restreamer.getRTMPStreamUrl();
 
-        if(streamType == 'repeatToLocalNginx') {    // repeat to local nginx server
+        if (streamType == 'repeatToLocalNginx') {    // repeat to local nginx server
             command = new FfmpegCommand(streamUrl, {
                 stdoutLines: 1
             });
@@ -622,15 +603,14 @@ class Restreamer {
             Restreamer.addStreamOptions(command, 'rtmp', null);
 
             // GUI option
-            if(Restreamer.data.options.rtspTcp && streamUrl.indexOf('rtsp') == 0) {
+            if (Restreamer.data.options.rtspTcp && streamUrl.indexOf('rtsp') == 0) {
                 Restreamer.addStreamOptions(command, 'rtsp-tcp', null);
             }
 
             // add outputs to the ffmpeg stream
             command.output(rtmpUrl);
             probePromise = Restreamer.probeStream(command, streamType)
-        }
-        else {  // repeat to optional output
+        } else {  // repeat to optional output
             command = new FfmpegCommand(rtmpUrl, {
                 stdoutLines: 1
             });
@@ -644,7 +624,7 @@ class Restreamer {
             probePromise = Restreamer.probeStream(command, streamType)
         }
 
-        if(probePromise === null) {
+        if (probePromise === null) {
             logger.debug('Skipping "startStream" because promise is null', streamType);
             return;
         }
@@ -654,7 +634,7 @@ class Restreamer {
             Restreamer.setTimeout(streamType, 'retry', () => {
                 logger.info('Retry to connect to "' + streamUrl + '"', streamType);
 
-                if(Restreamer.data.userActions[streamType] == 'stop') {
+                if (Restreamer.data.userActions[streamType] == 'stop') {
                     logger.debug('Skipping retry because "stop" has been clicked', streamType);
                     Restreamer.updateState(streamType, 'disconnected');
                     return;
@@ -662,7 +642,7 @@ class Restreamer {
 
                 Restreamer.startStream(streamUrl, streamType);
             }, config.ffmpeg.monitor.restart_wait);
-        }
+        };
 
         // current number of processed frames for stale detection
         let nFrames = -1;
@@ -677,9 +657,9 @@ class Restreamer {
                 gop: (parseInt(Restreamer.data.options.video.fps) * 2) + '',
                 profile: Restreamer.data.options.video.profile,
                 tune: Restreamer.data.options.video.tune
-            }
+            };
 
-            for(let o in options.video) {
+            for (let o in options.video) {
                 Restreamer.addStreamOptions(command, options.video[o], replace_video);
             }
 
@@ -688,9 +668,9 @@ class Restreamer {
                 bitrate: Restreamer.data.options.audio.bitrate,
                 channels: Restreamer.data.options.audio.channels,
                 sampling: Restreamer.data.options.audio.sampling
-            }
+            };
 
-            for(let o in options.audio) {
+            for (let o in options.audio) {
                 Restreamer.addStreamOptions(command, options.audio[o], replace_audio);
             }
 
@@ -698,7 +678,7 @@ class Restreamer {
                 .on('start', (commandLine) => {
                     Restreamer.data.processes[streamType] = command;
 
-                    if(Restreamer.data.userActions[streamType] == 'stop') {
+                    if (Restreamer.data.userActions[streamType] == 'stop') {
                         Restreamer.stopStream(streamType);
                         logger.debug('Skipping on "start" event of FFmpeg command because "stop" has been clicked', streamType);
                         return;
@@ -716,7 +696,7 @@ class Restreamer {
 
                     Restreamer.updateState(streamType, 'stopped');
 
-                    if(Restreamer.data.userActions[streamType] == 'stop') {
+                    if (Restreamer.data.userActions[streamType] == 'stop') {
                         Restreamer.updateState(streamType, 'disconnected');
                         logger.debug('Skipping retry because "stop" has been clicked', streamType);
                         return;
@@ -734,7 +714,7 @@ class Restreamer {
                     Restreamer.setTimeout(streamType, 'retry', null);
                     Restreamer.setTimeout(streamType, 'stale', null);
 
-                    if(Restreamer.data.userActions[streamType] == 'stop') {
+                    if (Restreamer.data.userActions[streamType] == 'stop') {
                         Restreamer.updateState(streamType, 'disconnected');
                         logger.debug('Skipping retry since "stop" has been clicked', streamType);
                         return;
@@ -747,13 +727,13 @@ class Restreamer {
 
                 // progress handler
                 .on('progress', (progress) => {
-                    if(Restreamer.data.states[streamType].type == 'connecting') {
+                    if (Restreamer.data.states[streamType].type == 'connecting') {
                         Restreamer.updateState(streamType, 'connected');
                     }
 
                     // compare the current number of frames
                     let nFramesChanged = false;
-                    if(nFrames != progress.frames) {
+                    if (nFrames != progress.frames) {
                         nFrames = progress.frames;
                         nFramesChanged = true;
                     }
@@ -762,7 +742,7 @@ class Restreamer {
                     Restreamer.updateProgressOnGui();
 
                     // add/reset a stale timeout if the number of frames changed
-                    if(nFramesChanged == true) {
+                    if (nFramesChanged == true) {
                         Restreamer.setTimeout(streamType, 'stale', () => {
                             logger.info('Stale connection', streamType);
                             Restreamer.stopStream(streamType);
@@ -774,7 +754,7 @@ class Restreamer {
         }).catch((error) => {
             logger.debug('Failed to spawn ffmpeg: ' + error.toString(), streamType);
 
-            if(Restreamer.data.userActions[streamType] == 'stop') {
+            if (Restreamer.data.userActions[streamType] == 'stop') {
                 Restreamer.updateState(streamType, 'disconnected');
                 logger.debug('Skipping retry since "stop" has been clicked', streamType);
                 return;
@@ -794,20 +774,20 @@ class Restreamer {
      * @param {int} delay Delay for the timeout
      * @return {void}
      */
-    static setTimeout(streamType, target, func, delay) {
-        if(!(target in Restreamer.data.timeouts)) {
+    static setTimeout (streamType, target, func, delay) {
+        if (!(target in Restreamer.data.timeouts)) {
             logger.error('Unknown target for timeout', streamType);
             return;
         }
 
-        if(!(streamType in Restreamer.data.timeouts[target])) {
+        if (!(streamType in Restreamer.data.timeouts[target])) {
             logger.error('Unknown stream type for timeout target "' + target + '"', streamType);
             return;
         }
 
         clearTimeout(Restreamer.data.timeouts[target][streamType]);
 
-        if(typeof func == 'function') {
+        if (typeof func == 'function') {
             Restreamer.data.timeouts[target][streamType] = setTimeout(func, delay);
         }
     }
@@ -815,7 +795,7 @@ class Restreamer {
     /**
      * bind websocket events on application start
      */
-    static bindWebsocketEvents() {
+    static bindWebsocketEvents () {
         WebsocketsController.setConnectCallback((socket) => {
             socket.emit('publicIp', Restreamer.data.publicIp);
             socket.on('startStream', (options) => {
@@ -824,15 +804,13 @@ class Restreamer {
                 Restreamer.updateOptions(options.options);
 
                 let streamUrl = '';
-                if(options.streamType == 'repeatToLocalNginx') {
+                if (options.streamType == 'repeatToLocalNginx') {
                     Restreamer.data.addresses.srcAddress = options.src;
                     streamUrl = options.src;
-                }
-                else if(options.streamType == 'repeatToOptionalOutput') {
+                } else if (options.streamType == 'repeatToOptionalOutput') {
                     Restreamer.data.addresses.optionalOutputAddress = options.optionalOutput;
                     streamUrl = options.optionalOutput;
-                }
-                else {
+                } else {
                     return;
                 }
 
@@ -845,12 +823,12 @@ class Restreamer {
             });
             socket.on('checkStates', () => {
                 logger.debug('Got "checkStates" event');
-                Restreamer.updateStreamDataOnGui()
+                Restreamer.updateStreamDataOnGui();
             });
             socket.on('playerOptions', (player) => {
                 logger.debug('Got "playerOptions" event');
                 Restreamer.updatePlayerOptions(player);
-            })
+            });
         });
     }
 
@@ -859,7 +837,7 @@ class Restreamer {
      * to write it to filesystem
      * @returns {object}
      */
-    static extractDataOfStreams() {
+    static extractDataOfStreams () {
         return {
             'addresses': Restreamer.data.addresses,
             'options': Restreamer.data.options,
@@ -872,7 +850,7 @@ class Restreamer {
      * create with only the data, that is needed by the jsonDb
      * @return {object}
      */
-    static dataForJsonDb() {
+    static dataForJsonDb () {
         return {
             'addresses': Restreamer.data.addresses,
             'options': Restreamer.data.options,
@@ -884,14 +862,17 @@ class Restreamer {
     /**
      * check for updates
      */
-    static checkForUpdates() {
-        const url = {'host': 'datarhei.org', 'path': '/apps.json'};
+    static checkForUpdates () {
+        const url = {
+            'host': 'datarhei.org',
+            'path': '/apps.json'
+        };
         logger.debug('Checking for updates...', 'checkForUpdates');
         https.get(url, (response) => {
             if (response.statusCode === 200) {
                 response.on('data', (body) => {
-                    var updateCheck = JSON.parse(body);
-                    var updateAvailable = require('semver').lt(packageJson.version, updateCheck.restreamer.version);
+                    const updateCheck = JSON.parse(body);
+                    const updateAvailable = require('semver').lt(packageJson.version, updateCheck.restreamer.version);
                     logger.info(`Update checking succeeded. ${updateAvailable ? 'Update' : 'No updates'} available`, 'checkForUpdates');
                     logger.debug(`local: ${packageJson.version}; remote: ${updateCheck.restreamer.version}`, 'checkForUpdates');
                     Restreamer.data.updateAvailable = updateAvailable;
@@ -909,7 +890,7 @@ class Restreamer {
     /**
      * get public ip
      */
-    static getPublicIp() {
+    static getPublicIp () {
         logger.info('Retrieving public IP ...', 'publicIP');
         publicIp.v4().then(ip => {
             Restreamer.data.publicIp = ip;

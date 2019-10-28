@@ -26,7 +26,7 @@ const Restreamer = require('./classes/Restreamer');
 const RestreamerData = require('./classes/RestreamerData');
 const restreamerApp = require('./webserver/app');
 
-if (process.env.RS_DEBUG == "true" ) {
+if (process.env.RS_DEBUG === 'true') {
     logger.info('Debugging enabled. Check the /debug path in the web interface.', false);
 }
 
@@ -52,7 +52,7 @@ if (env.hasErrors()) {
 }
 
 // start the app
-nginxrtmp.start(process.env.RS_HTTPS == "true")
+nginxrtmp.start(process.env.RS_HTTPS === 'true')
     .then(() => {
         return RestreamerData.checkJSONDb();
     })
