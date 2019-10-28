@@ -26,7 +26,7 @@ window.angular.module('Main').controller('mainController',
         const initClappr = () => {
             console.log($scope.reStreamerData.options.player);
             const plugins = [];
-            if($scope.reStreamerData.options.player.statistics == true) {
+            if ($scope.reStreamerData.options.player.statistics === true) {
                 plugins.push(ClapprNerdStats);
                 plugins.push(ClapprStats);
             }
@@ -39,7 +39,7 @@ window.angular.module('Main').controller('mainController',
                 poster: 'images/live.jpg?t=' + String(new Date().getTime()),
                 mediacontrol: {
                     seekbar: $scope.reStreamerData.options.player.color,
-                    buttons: $scope.reStreamerData.options.player.color
+                    buttons: $scope.reStreamerData.options.player.color,
                 },
                 height: '100%',
                 width: '100%',
@@ -53,15 +53,15 @@ window.angular.module('Main').controller('mainController',
                 },
                 clapprNerdStats: {
                     shortcut: ['command+shift+s', 'ctrl+shift+s'],
-                    iconPosition: 'top-right'
-                }
+                    iconPosition: 'top-right',
+                },
             };
 
-            if($scope.reStreamerData.options.player.logo.image.length != 0) {
+            if ($scope.reStreamerData.options.player.logo.image.length !== 0) {
                 config.watermark = $scope.reStreamerData.options.player.logo.image;
                 config.position = $scope.reStreamerData.options.player.logo.position;
 
-                if($scope.reStreamerData.options.player.logo.link.length != 0) {
+                if ($scope.reStreamerData.options.player.logo.link.length !== 0) {
                     config.watermarkLink = $scope.reStreamerData.options.player.logo.link;
                 }
             }
@@ -87,14 +87,14 @@ window.angular.module('Main').controller('mainController',
                     preset: 'ultrafast',
                     bitrate: 4096,
                     profile: 'auto',
-                    tune: 'none'
+                    tune: 'none',
                 },
                 audio: {
                     codec: 'copy',
                     preset: 'silence',
                     bitrate: 64,
                     channels: 'mono',
-                    sampling: 41000
+                    sampling: 41000,
                 },
                 player: {
                     autoplay: false,
@@ -104,32 +104,32 @@ window.angular.module('Main').controller('mainController',
                     logo: {
                         image: '',
                         position: 'bottom-right',
-                        link: ''
-                    }
-                }
+                        link: '',
+                    },
+                },
             },
             states: {
                 repeatToLocalNginx: {
                     type: '',
-                    message: ''
+                    message: '',
                 },
                 repeatToOptionalOutput: {
                     type: '',
-                    message: ''
-                }
+                    message: '',
+                },
             },
             userActions: {
                 repeatToLocalNginx: '',
-                repeatToOptionalOutput: ''
+                repeatToOptionalOutput: '',
             },
             progresses: {
                 repeatToLocalNginx: '',
-                repeatToOptionalOutput: ''
+                repeatToOptionalOutput: '',
             },
             addresses: {
                 optionalOutputAddress: '',
-                srcAddress: ''
-            }
+                srcAddress: '',
+            },
         };
 
         $rootScope.windowLocationPort = window.location.port;
@@ -138,17 +138,17 @@ window.angular.module('Main').controller('mainController',
         $scope.optionalOutput = '';
 
         $scope.showStartButton = (streamType) => {
-            return ($scope.reStreamerData.states[streamType].type == 'disconnected');
+            return ($scope.reStreamerData.states[streamType].type === 'disconnected');
         };
 
         $scope.showStopButton = (streamType) => {
             let state = $scope.reStreamerData.states[streamType].type;
 
-            return (state == 'connected' || state == 'connecting' || state == 'error');
+            return (state === 'connected' || state === 'connecting' || state === 'error');
         };
 
         $scope.disableInput = (streamType) => {
-            return ($scope.reStreamerData.states[streamType].type != 'disconnected');
+            return ($scope.reStreamerData.states[streamType].type !== 'disconnected');
         };
 
         $scope.openPlayer = () => {
@@ -194,20 +194,19 @@ window.angular.module('Main').controller('mainController',
             const inputRegex = /^(rtmp(s|t)?|rtsp|https?):\/\//;
             const outputRegex = /^rtmp(s|t)?/;
 
-            var optionalOutput = '';
-            if($scope.activateOptionalOutput === true) {
+            let optionalOutput = '';
+            if ($scope.activateOptionalOutput === true) {
                 optionalOutput = $scope.reStreamerData.addresses.optionalOutputAddress;
             }
 
-            if(streamType == 'repeatToOptionalOutput') {
+            if (streamType === 'repeatToOptionalOutput') {
                 $scope.optionalOutputInputInvalid = !outputRegex.test(optionalOutput);
-                if($scope.optionalOutputInputInvalid) {
+                if ($scope.optionalOutputInputInvalid) {
                     return;
                 }
-            }
-            else {
+            } else {
                 $scope.nginxRepeatStreamInputInvalid = !inputRegex.test($scope.reStreamerData.addresses.srcAddress);
-                if($scope.nginxRepeatStreamInputInvalid) {
+                if ($scope.nginxRepeatStreamInputInvalid) {
                     return;
                 }
             }
@@ -216,7 +215,7 @@ window.angular.module('Main').controller('mainController',
                 src: $scope.reStreamerData.addresses.srcAddress,
                 options: $scope.reStreamerData.options,
                 streamType: streamType,
-                optionalOutput: optionalOutput
+                optionalOutput: optionalOutput,
             });
         };
 

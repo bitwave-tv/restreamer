@@ -5,7 +5,7 @@
  */
 'use strict';
 
-var app = window.angular.module('app', [
+const app = window.angular.module('app', [
     'ui.router',
     'ui.bootstrap',
     'pascalprecht.translate',
@@ -19,12 +19,12 @@ var app = window.angular.module('app', [
 app.config(($stateProvider) => {
     $stateProvider
         .state('login', {
-            'controller': 'loginController',
-            'templateUrl': 'views/login.html'
+            controller: 'loginController',
+            templateUrl: 'views/login.html'
         })
         .state('logged-in', {
-            'controller': 'mainController',
-            'templateUrl': 'views/main.html'
+            controller: 'mainController',
+            templateUrl: 'views/main.html'
         });
 });
 

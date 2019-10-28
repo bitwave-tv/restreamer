@@ -12,10 +12,10 @@ window.angular.module('Header').controller('headerController',
             $scope.currentLocale = locale;
             $translate.use(locale).then(
                 () => {
-                    loggerService.info('Switched language to ' + locale);
+                    loggerService.info(`Switched language to ${locale}`);
                 },
                 (error) => {
-                    loggerService.error('INFO', 'Switching language to ' + locale + ' failed: ' + error);
+                    loggerService.error('INFO', `Switching language to ${locale} failed: ${error}`);
                 });
         };
         $scope.langIs = (locale) => {

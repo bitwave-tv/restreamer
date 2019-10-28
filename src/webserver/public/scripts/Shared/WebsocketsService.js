@@ -44,11 +44,11 @@ const WebsocketsService = function websocketsService ($rootScope, loggerService)
      * @returns {websocketsService}
      */
     this.on = (event, callback) => {
-        var self = this;
+        const self = this;
         if (this.socket) {
             this.loggerService.websocketsIn(`got event "${event}"`);
             this.socket.on(event, function woEvent () {
-                var args = arguments;
+                const args = arguments;
                 self.$rootScope.$apply(function weApply () {
                     callback.apply(null, args);
                 });
