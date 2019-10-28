@@ -40,7 +40,7 @@ class Logger {
         this.debuglog = null;
 
         if (process.env.RS_DEBUG == 'true') {
-            let identifier = process.pid + '-' + process.platform + '-' + process.arch;
+            let identifier = `${process.pid}-${process.platform}-${process.arch}`;
             try {
                 this.debuglog = fs.openSync('/restreamer/src/webserver/public/debug/Restreamer-' + identifier + '.txt', 'a');
             } catch (err) {
@@ -113,8 +113,8 @@ class Logger {
      * @param {boolean=} alertGui
      */
     info (message, context, alertGui) {
-        var loggerContext = context;
-        var loggerAlertGui = alertGui;
+        let loggerContext = context;
+        let loggerAlertGui = alertGui;
 
         if (typeof context === 'undefined') {
             loggerContext = this.context;
@@ -145,8 +145,8 @@ class Logger {
      * @param {boolean=} alertGui
      */
     warn (message, context, alertGui) {
-        var loggerContext = context;
-        var loggerAlertGui = alertGui;
+        let loggerContext = context;
+        let loggerAlertGui = alertGui;
 
         if (typeof context === 'undefined') {
             loggerContext = this.context;
@@ -177,8 +177,8 @@ class Logger {
      * @param {boolean=} alertGui
      */
     debug (message, context, alertGui) {
-        var loggerContext = context;
-        var loggerAlertGui = alertGui;
+        let loggerContext = context;
+        let loggerAlertGui = alertGui;
 
         if (typeof context === 'undefined') {
             loggerContext = this.context;
@@ -210,8 +210,8 @@ class Logger {
      * @param {boolean=} alertGui
      */
     error (message, context, alertGui) {
-        var loggerContext = context;
-        var loggerAlertGui = alertGui;
+        let loggerContext = context;
+        let loggerAlertGui = alertGui;
 
         if (typeof context === 'undefined') {
             loggerContext = this.context;

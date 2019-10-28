@@ -154,8 +154,8 @@ class RestreamerExpressApp {
      * @returns {*|promise}
      */
     startWebserver () {
-        var deferred = Q.defer();
-        var server = null;
+        const deferred = Q.defer();
+        let server = null;
 
         logger.info('Starting ...');
         this.app.set('port', process.env.RS_NODEJS_PORT);

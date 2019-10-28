@@ -39,7 +39,7 @@ class Nginxrtmp {
         let timeout = 250;
         let abort = false;
 
-        if(useSSL == false) {
+        if (useSSL == false) {
             this.process = spawn(this.config.nginx.command, this.config.nginx.args);
         }
         else {
@@ -50,9 +50,9 @@ class Nginxrtmp {
         this.process.stdout.on('data', (data) => {
             let lines = data.toString().split(/[\r\n]+/);
 
-            for(let i = 0; i < lines.length; i++) {
+            for (let i = 0; i < lines.length; i++) {
                 let line = lines[i].replace(/^.*\]/, '').trim();
-                if(line.length == 0) {
+                if (line.length == 0) {
                     continue;
                 }
 
@@ -63,9 +63,9 @@ class Nginxrtmp {
         this.process.stderr.on('data', (data) => {
             let lines = data.toString().split(/[\r\n]+/);
 
-            for(let i = 0; i < lines.length; i++) {
+            for (let i = 0; i < lines.length; i++) {
                 let line = lines[i].replace(/^.*\]/, '').trim();
-                if(line.length == 0) {
+                if (line.length == 0) {
                     continue;
                 }
 
@@ -78,11 +78,11 @@ class Nginxrtmp {
 
             this.logger.error(`Exited with code: ${code}`);
 
-            if(code < 0) {
+            if (code < 0) {
                 return;
             }
 
-            if(this.allowRestart == true) {
+            if (this.allowRestart == true) {
                 let self = this;
                 setTimeout(() => {
                     self.logger.info('Trying to restart ...');
@@ -97,14 +97,14 @@ class Nginxrtmp {
 
         let running = false;
 
-        while(running == false){
+        while (running == false){
             running = await this.isRunning(timeout);
             if(abort == true) {
                 break;
             }
         }
 
-        if(running == false) {
+        if (running == false) {
             this.process = null;
             throw new Error('Failed to start');
         }

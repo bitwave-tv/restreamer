@@ -22,8 +22,8 @@ const schemaFile = 'jsondb_v1_schema.json';
 class RestreamerData {
 
     static checkJSONDb () {
-        var schemadata = {};
-        var dbdata = {};
+        let schemadata = {};
+        let dbdata = {};
         var deferred = Q.defer();
         var readSchema = Q.nfcall(fs.readFile, path.join(confPath, schemaFile));
         var readDBFile = Q.nfcall(fs.readFile, path.join(dbPath, dbFile));

@@ -13,10 +13,10 @@ const auth = require(require('path').join(global.__base, 'conf', 'live.json')).a
 module.exports = (app) => {
     /* Handle Login POST */
     app.post('/login', (req, res, next) => {
-        var username = process.env.RS_USERNAME || auth.username;
-        var password = process.env.RS_PASSWORD || auth.password;
-        var success = false;
-        var message = '';
+        const username = process.env.RS_USERNAME || auth.username;
+        const password = process.env.RS_PASSWORD || auth.password;
+        let success = false;
+        let message = '';
         if (req.body.user === username && req.body.pass === password) {
             req.session.authenticated = true;
             success = true;
@@ -30,13 +30,16 @@ module.exports = (app) => {
             message: message
         });
     });
+
     app.get('/authenticated', (req, res) => {
         res.json(req.session.authenticated === true);
     });
+
     app.get('/logout', (req, res) => {
         req.session.destroy();
         res.end();
     });
+
     /* Handle NGINX-RTMP token */
     app.get('/token', (req, res) => {
         const token = process.env.RS_TOKEN || auth.token;
