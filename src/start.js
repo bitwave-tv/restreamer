@@ -17,6 +17,7 @@ const env = require('./classes/EnvVar');
 // setup environment vars
 env.init(config);
 
+const CFonts = require('cfonts');
 const packageJson = require(path.join('..', 'package.json'));
 const logger = require('./classes/Logger')('start');
 const nginxrtmp = require('./classes/Nginxrtmp')(config);
@@ -25,16 +26,16 @@ const Restreamer = require('./classes/Restreamer');
 const RestreamerData = require('./classes/RestreamerData');
 const restreamerApp = require('./webserver/app');
 
-if(process.env.RS_DEBUG == "true") {
+if (process.env.RS_DEBUG == "true" ) {
     logger.info('Debugging enabled. Check the /debug path in the web interface.', false);
 }
 
 // show start message
-logger.info('     _       _             _           _ ', false);
-logger.info('  __| | __ _| |_ __ _ _ __| |___   ___(_)', false);
-logger.info(' / _  |/ _  | __/ _  |  __|  _  |/  _ | |', false);
-logger.info('| (_| | (_| | || (_| | |  | | | |  __/| |', false);
-logger.info('|_____|_____|_||_____|_|  |_| |_|____||_|', false);
+logger.info('Starting [bitwave.tv] restreamer');
+logger.info(CFonts.render('bitwave', {
+    font: 'simple3d',
+    color: '#0f0',
+}).string);
 logger.info('', false);
 logger.info('Restreamer v' + packageJson.version, false);
 logger.info('', false);
@@ -46,7 +47,7 @@ logger.info('', false);
 env.list(logger);
 
 // bail out if there are errors
-if(env.hasErrors()) {
+if (env.hasErrors()) {
     process.exit();
 }
 

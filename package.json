@@ -15,6 +15,7 @@
     "ajv": "^6.5.4",
     "ajv-keywords": "^3.2.0",
     "body-parser": "^1.18.3",
+    "cfonts": "^2.4.5",
     "compression": "^1.7.3",
     "cookie": "0.3.1",
     "cookie-parser": "1.4.3",

@@ -237,7 +237,7 @@
         ],
         "quote-props": [
             2,
-            "always"
+            "as-needed"
         ],
         "quotes": [
             2,
