@@ -156,8 +156,8 @@ class Restreamer {
     }
 
     static getSnapshotInterval () {
-        const minimalInterval = 10000;    // 10 seconds
-        const defaultInterval = 60000;    // 60 seconds
+        const minimalInterval = 10000; // 10 seconds
+        const defaultInterval = 60000; // 60 seconds
         let parsedInterval = process.env.RS_SNAPSHOT_INTERVAL.match(/^([0-9]+)(m|s|ms)?$/);
 
         let interval = defaultInterval;
@@ -184,7 +184,7 @@ class Restreamer {
         }
 
         if (interval === 0) {
-            return 0;   // disable snapshots
+            return 0; // disable snapshots
         } else if (interval < minimalInterval) {
             interval = minimalInterval;
         }

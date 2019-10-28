@@ -39,7 +39,7 @@ class Logger {
 
         this.debuglog = null;
 
-        if (process.env.RS_DEBUG == 'true') {
+        if (process.env.RS_DEBUG === 'true') {
             let identifier = `${process.pid}-${process.platform}-${process.arch}`;
             try {
                 this.debuglog = fs.openSync('/restreamer/src/webserver/public/debug/Restreamer-' + identifier + '.txt', 'a');
@@ -124,7 +124,7 @@ class Logger {
             loggerAlertGui = false;
         }
 
-        if (process.env.RS_DEBUG == 'true') {
+        if (process.env.RS_DEBUG === 'true') {
             this.file(message, loggerContext, 'INFO');
         }
 
@@ -156,7 +156,7 @@ class Logger {
             loggerAlertGui = false;
         }
 
-        if (process.env.RS_DEBUG == 'true') {
+        if (process.env.RS_DEBUG === 'true') {
             this.file(message, loggerContext, 'WARN');
         }
 
@@ -188,7 +188,7 @@ class Logger {
             loggerAlertGui = false;
         }
 
-        if (process.env.RS_DEBUG == 'true') {
+        if (process.env.RS_DEBUG === 'true') {
             this.file(message, loggerContext, 'DEBUG');
         }
 
@@ -221,7 +221,7 @@ class Logger {
             loggerAlertGui = false;
         }
 
-        if (process.env.RS_DEBUG == 'true') {
+        if (process.env.RS_DEBUG === 'true') {
             this.file(message, loggerContext, 'ERROR');
         }
 

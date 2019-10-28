@@ -21,7 +21,7 @@ class WebsocketsController {
      * @param {object} data data to emit to the client event listener
      */
     static emit (event, data) {
-        app.get('websocketsReady').promise.then((io) => {
+        app.get('websocketsReady').promise.then(io => {
             logger.debug(`Emitting ${event}`);
             io.sockets.emit(event, data);
         });
@@ -32,8 +32,8 @@ class WebsocketsController {
      * @param {function} callback
      */
     static setConnectCallback (callback) {
-        app.get('websocketsReady').promise.then((io) => {
-            io.on('connection', (socket) => {
+        app.get('websocketsReady').promise.then(io => {
+            io.on('connection', socket => {
                 callback(socket);
             });
         });

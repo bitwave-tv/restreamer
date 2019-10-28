@@ -66,5 +66,5 @@ nginxrtmp.start(process.env.RS_HTTPS === 'true')
         return Q.fcall(Restreamer.restoreProcesses);
     })
     .catch((error) => {
-        logger.error('Error starting webserver and nginx for application: ' + error);
+        logger.error(`Error starting webserver and nginx for application: ${error}`);
     });

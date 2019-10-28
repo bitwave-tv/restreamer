@@ -32,7 +32,7 @@ class EnvVar {
                     let alias = envVar.alias[i];
                     // If the alias exists, copy it to the actual name and delete it.
                     if (alias in process.env) {
-                        this.log('The use of ' + alias + ' is deprecated. Please use ' + envVar.name + ' instead', 'warn');
+                        this.log(`The use of ${alias} is deprecated. Please use ${envVar.name} instead`, 'warn');
                         process.env[envVar.name] = process.env[alias];
                         delete process.env[alias];
                     }
@@ -49,7 +49,7 @@ class EnvVar {
                         process.env[envVar.name] = parseInt(process.env[envVar.name], 10);
                         break;
                     case 'bool':
-                        process.env[envVar.name] = process.env[envVar.name] == 'true';
+                        process.env[envVar.name] = process.env[envVar.name] === 'true';
                         break;
                     default: // keep strings
                         break;
@@ -57,17 +57,17 @@ class EnvVar {
 
                 // Cover blacklisted values
                 let value = process.env[envVar.name];
-                if (logBlacklist.indexOf(envVar.name) != -1) {
+                if (logBlacklist.indexOf(envVar.name) !== -1) {
                     value = '******';
                 }
 
-                this.log(envVar.name + ' = ' + value + ' - ' + envVar.description, 'info');
+                this.log(`${envVar.name} = ${value} - ${envVar.description}`, 'info');
             } else {
-                if (envVar.required == true) {
-                    this.log(envVar.name + ' not set, but required', 'error');
+                if (envVar.required === true) {
+                    this.log(`${envVar.name} not set, but required`, 'error');
                     this.errors = true;
                 } else {
-                    this.log(envVar.name + ' = ' + envVar.defaultValue + ' (using default) - ' + envVar.description, 'info');
+                    this.log(`${envVar.name} = ${envVar.defaultValue} (using default) - ${envVar.description}`, 'info');
                     process.env[envVar.name] = envVar.defaultValue;
                 }
             }
