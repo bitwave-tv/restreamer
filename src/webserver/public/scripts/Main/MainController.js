@@ -145,8 +145,7 @@ window.angular.module('Main').controller('mainController',
         };
 
         $scope.showStopButton = (streamType) => {
-            let state = $scope.reStreamerData.states[streamType].type;
-
+            const state = $scope.reStreamerData.states[streamType].type;
             return (state === 'connected' || state === 'connecting' || state === 'error');
         };
 
@@ -197,8 +196,8 @@ window.angular.module('Main').controller('mainController',
         }
 
         $scope.startStream = (streamType) => {
-            const inputRegex = /^(rtmp(s|t)?|rtsp|https?):\/\//;
-            const outputRegex = /^rtmp(s|t)?/;
+            const inputRegex = /^(rtmp[st]?|rtsp|https?):\/\//;
+            const outputRegex = /^rtmp[st]?/;
 
             let optionalOutput = '';
             if ($scope.activateOptionalOutput === true) {
