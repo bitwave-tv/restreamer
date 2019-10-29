@@ -257,7 +257,6 @@ class Restreamer {
      */
     static writeToDB () {
         const db = new JsonDB(config.jsondb, true, false);
-
         db.push('/', Restreamer.dataForJsonDb());
     }
 
@@ -265,8 +264,7 @@ class Restreamer {
      * write player config to public directory
      */
     static writeToPlayerConfig () {
-        let data = 'var playerConfig = ' + JSON.stringify(Restreamer.data.options.player);
-
+        const data = 'var playerConfig = ' + JSON.stringify(Restreamer.data.options.player);
         fs.writeFileSync('src/webserver/public/config.js', data, 'utf8');
     }
 
@@ -293,7 +291,7 @@ class Restreamer {
     static probeStream (ffmpegCommand, streamType) {
         const deferred = Q.defer();
 
-        let state = Restreamer.getState(streamType);
+        const state = Restreamer.getState(streamType);
         if (state !== 'connecting') {
             logger.debug(`Skipping "startStream" because state is not "connecting". Current state is "${state}".`, streamType);
             return null;
@@ -343,7 +341,7 @@ class Restreamer {
                 Restreamer.data.options.audio.id = audio.index;
             }
 
-            let options = {
+            const options = {
                 audio: [],
                 video: []
             };
@@ -515,7 +513,7 @@ class Restreamer {
      * @return {string} name of the previous user action
      */
     static setUserAction (streamType, action) {
-        let previousAction = Restreamer.data.userActions[streamType];
+        const previousAction = Restreamer.data.userActions[streamType];
         Restreamer.data.userActions[streamType] = action;
         return previousAction;
     }
@@ -527,7 +525,7 @@ class Restreamer {
      * @return {string} name of the new user action
      */
     static updateUserAction (streamType, action) {
-        let previousAction = Restreamer.setUserAction(streamType, action);
+        const previousAction = Restreamer.setUserAction(streamType, action);
 
         if (previousAction === action) {
             return action;
@@ -596,7 +594,7 @@ class Restreamer {
         // update the state on the frontend
         Restreamer.updateState(streamType, 'connecting');
 
-        let rtmpUrl = Restreamer.getRTMPStreamUrl();
+        const rtmpUrl = Restreamer.getRTMPStreamUrl();
 
         if (streamType === 'repeatToLocalNginx') { // repeat to local nginx server
             ffmpegCommand = new FfmpegCommand(streamUrl, {
@@ -918,15 +916,15 @@ Restreamer.data = {
     timeouts: {
         retry: {
             repeatToLocalNginx: null,
-            repeatToOptionalOutput: null
+            repeatToOptionalOutput: null,
         },
         stale: {
             repeatToLocalNginx: null,
-            repeatToOptionalOutput: null
+            repeatToOptionalOutput: null,
         },
         snapshot: {
-            repeatToLocalNginx: null
-        }
+            repeatToLocalNginx: null,
+        },
     },
     options: {
         rtspTcp: false,
@@ -936,14 +934,14 @@ Restreamer.data = {
             bitrate: '4096',
             fps: '25',
             profile: 'auto',
-            tune: 'none'
+            tune: 'none',
         },
         audio: {
             codec: 'auto',
             preset: 'silence',
             bitrate: '64',
             channels: 'mono',
-            sampling: '44100'
+            sampling: '44100',
         },
         player: {
             autoplay: false,
@@ -953,27 +951,27 @@ Restreamer.data = {
             logo: {
                 image: '',
                 position: 'bottom-right',
-                link: ''
-            }
-        }
+                link: '',
+            },
+        },
     },
     states: {
         repeatToLocalNginx: {
             type: 'disconnected',
-            message: ''
+            message: '',
         },
         repeatToOptionalOutput: {
             type: 'disconnected',
-            message: ''
-        }
+            message: '',
+        },
     },
     userActions: {
         repeatToLocalNginx: 'start',
-        repeatToOptionalOutput: 'start'
+        repeatToOptionalOutput: 'start',
     },
     processes: {
         repeatToLocalNginx: null,
-        repeatToOptionalOutput: null
+        repeatToOptionalOutput: null,
     },
     progresses: {
         // overwritten with ffmpeg process if stream has been started
@@ -984,10 +982,10 @@ Restreamer.data = {
     },
     addresses: {
         srcAddress: '',
-        optionalOutputAddress: ''
+        optionalOutputAddress: '',
     },
     updateAvailable: false,
-    publicIp: '127.0.0.1'
+    publicIp: '127.0.0.1',
 };
 
 module.exports = Restreamer;

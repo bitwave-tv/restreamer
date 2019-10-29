@@ -57,7 +57,7 @@ class RestreamerExpressApp {
             key: this.sessionKey,
             secret: this.secretKey,
             unset: 'destroy',
-            store: this.sessionStore
+            store: this.sessionStore,
         }));
     }
 
@@ -125,7 +125,7 @@ class RestreamerExpressApp {
             res.status(err.status || 500);
             res.send({
                 message: err.message,
-                error: {}
+                error: {},
             });
         });
     }
