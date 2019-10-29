@@ -52,7 +52,10 @@ window.angular.module('Main').controller('mainController',
                     onReport: (metrics) => {},
                 },
                 clapprNerdStats: {
-                    shortcut: ['command+shift+s', 'ctrl+shift+s'],
+                    shortcut: [
+                        'command+shift+s',
+                        'ctrl+shift+s'
+                    ],
                     iconPosition: 'top-right',
                 },
             };
@@ -174,19 +177,22 @@ window.angular.module('Main').controller('mainController',
             /*
              * test websockets connection (should print below message to browser console if it works)
              */
-            ws.on('updateProgress', (progresses) => {
+            ws.on('updateProgress', progresses => {
                 $scope.reStreamerData.progresses = progresses;
             });
-            ws.on('publicIp', (publicIp) => {
+
+            ws.on('publicIp', publicIp => {
                 $rootScope.publicIp = publicIp;
             });
-            ws.on('updateStreamData', (reStreamerData) => {
+
+            ws.on('updateStreamData', reStreamerData => {
                 $scope.reStreamerData = reStreamerData;
                 if ($scope.showStopButton('repeatToOptionalOutput')) {
                     // checkbox
                     $scope.activateOptionalOutput = true;
                 }
             });
+
             ws.on('snapshot', updateSnapshot);
         }
 

@@ -15,7 +15,7 @@ window.angular.module('Header').controller('headerController',
                     loggerService.info(`Switched language to ${locale}`);
                 },
                 (error) => {
-                    loggerService.error('INFO', `Switching language to ${locale} failed: ${error}`);
+                    loggerService.error(`[INFO] Switching language to ${locale} failed: ${error}`);
                 });
         };
         $scope.langIs = (locale) => {

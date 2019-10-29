@@ -29,8 +29,8 @@ class Restreamer {
      * @returns {string}
      */
     static getRTMPStreamUrl () {
-        let nginx = config.nginx.streaming;
-        let token = process.env.RS_TOKEN || config.auth.token;
+        const nginx = config.nginx.streaming;
+        const token = process.env.RS_TOKEN || config.auth.token;
 
         let url = `rtmp://${nginx.ip}:${nginx.rtmp_port}${nginx.rtmp_hls_path}live.stream`;
 
@@ -86,17 +86,18 @@ class Restreamer {
         ffmpegCommand.on('start', (commandLine) => {
             logger.debug('Spawned: ' + commandLine, 'snapshot');
         });
+
         ffmpegCommand.on('error', (error) => {
             logger.error(error.toString().trim(), 'snapshot');
-
             fetchSnapshot();
         });
+
         ffmpegCommand.on('end', () => {
             logger.info('Updated. Next scheduled update in ' + interval + 'ms.', 'snapshot');
             WebsocketsController.emit('snapshot', null);
-
             fetchSnapshot();
         });
+
         ffmpegCommand.exec();
     }
 
@@ -302,7 +303,6 @@ class Restreamer {
             if (err) {
                 let lines = err.toString().split(/\r\n|\r|\n/);
                 lines = lines.filter(line => line.length > 0);
-
                 return deferred.reject(lines[lines.length - 1]);
             }
 
@@ -654,7 +654,7 @@ class Restreamer {
 
         // after adding outputs, define events on the new ffmpeg stream
         probePromise.then((options) => {
-            let replaceVideo = {
+            const replaceVideo = {
                 videoid: Restreamer.data.options.video.id,
                 preset: Restreamer.data.options.video.preset,
                 bitrate: Restreamer.data.options.video.bitrate,
@@ -668,7 +668,7 @@ class Restreamer {
                 Restreamer.addStreamOptions(ffmpegCommand, options.video[o], replaceVideo);
             }
 
-            let replaceAudio = {
+            const replaceAudio = {
                 audioid: Restreamer.data.options.audio.id,
                 bitrate: Restreamer.data.options.audio.bitrate,
                 channels: Restreamer.data.options.audio.channels,
