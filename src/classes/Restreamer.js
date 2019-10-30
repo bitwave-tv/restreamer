@@ -204,6 +204,9 @@ class Restreamer {
         if (Restreamer.data.processes[streamType] !== null) {
             Restreamer.data.processes[streamType].kill('SIGKILL');
             Restreamer.data.processes[streamType] = null;
+        } else {
+            logger.info('No ffmpeg process exists, forcing state to disconnected.', streamType);
+            Restreamer.updateState(streamType, 'disconnected');
         }
     }
 
@@ -301,6 +304,7 @@ class Restreamer {
             if (err) {
                 let lines = err.toString().split(/\r\n|\r|\n/);
                 lines = lines.filter(line => line.length > 0);
+                logger.error(err.toString(), streamType);
                 return deferred.reject(lines[lines.length - 1]);
             }
 
@@ -712,6 +716,8 @@ class Restreamer {
 
                 // stream error handler
                 .on('error', (error, stdout, stderr) => {
+                    logger.debug(`ffmpeg error: ${error.toString()}`, streamType);
+
                     Restreamer.data.processes[streamType] = null;
 
                     Restreamer.setTimeout(streamType, 'retry', null);
