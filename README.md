@@ -20,6 +20,22 @@ We give you a lot of of informations from setting up a camera, embedding your pl
 
 More additional informations about streaming, cameras and so on you can find in our [Wiki](https://datarhei.github.com/restreamer/wiki). 
 
+## API
+
+Info:
+ - `get` /v1/version
+ - `get` /v1/ip
+ - `get` /v1/status
+ - `get` /v1/progress
+ 
+ `v0.5.0+` now allows control of the restreamer via API commands.
+ 
+ Control:
+ - `post` /v1/start
+ - `post` /v1/stop
+ - `post` /v1/start-relay
+ - `post` /v1/stop-relay
+
 ## Development
 
 #### Building your own Docker-Image:

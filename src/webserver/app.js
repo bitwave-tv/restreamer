@@ -66,6 +66,7 @@ class RestreamerExpressApp {
      */
     addParsers () {
         this.app.use(bodyParser.json());
+        this.app.use(bodyParser.urlencoded({extended: true}));
         this.app.use(cookieParser());
     }
 
